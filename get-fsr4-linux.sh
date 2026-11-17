@@ -26,10 +26,10 @@ SRC="$ROOT/_Build/deps/ffx-vk-linux"
 BUILD="$SRC/build"
 REPO="${FFX_VK_LINUX_REPO:-https://github.com/DuIslingr/ffx-vk-linux}"
 # The ffx-vk-linux commit this builds: code from outside this repository that loads AMD's DLLs into the emulator's process,
-# so it is pinned, not "whatever the default branch has today". This is the one the OpenSSL patch below was made against
-# and that was built with this emulator. FFX_VK_LINUX_REF=<full commit id, tag or branch> tries another (a newer one: then
-# the patch may not apply, and nothing here has been tested with it).
-PINNED_REF=4d339b8d4540744d9c0d0c6b961074f1f266867c
+# so it is pinned, not "whatever the default branch has today". This is the one built and tested with this emulator; its
+# OpenSSL code already uses the accessor functions OpenSSL 4 needs. FFX_VK_LINUX_REF=<full commit id, tag or branch> tries
+# another (nothing here has been tested with it; an older one may not build with OpenSSL 4).
+PINNED_REF=dbcb1ff9fda67621c21b07d2028c900c3cb31ec0
 REF="${FFX_VK_LINUX_REF:-$PINNED_REF}"
 
 for tool in git cmake c++ python3 pkg-config; do
@@ -67,17 +67,6 @@ fi
 echo "ffx-vk-linux $HEAD_ID"
 if [ "$HEAD_ID" != "$PINNED_REF" ]; then
 	echo "NOTE: this is not the commit this was tested with ($PINNED_REF)." >&2
-fi
-
-# OpenSSL 4 made its ASN.1 structures opaque (and X509_get_X509_PUBKEY's result const): ffx-vk-linux's signature check read
-# their members directly and does not build there. The patch (kept here: tools/local/fsr4/ffx-vk-linux-openssl4.patch) uses
-# the accessor functions, which OpenSSL 1.1 and 3 have too. Skipped when the sources already have it.
-FIX="$ROOT/tools/local/fsr4/ffx-vk-linux-openssl4.patch"
-if [ -f "$FIX" ] && git -C "$SRC" apply --check "$FIX" 2>/dev/null; then
-	git -C "$SRC" apply "$FIX"
-	echo "Applied $(basename "$FIX") to ffx-vk-linux"
-else
-	echo "NOTE: $(basename "$FIX") not applied (the sources already have it, or differ from the pinned commit)." >&2
 fi
 
 cmake -S "$SRC" -B "$BUILD" -DCMAKE_BUILD_TYPE=Release

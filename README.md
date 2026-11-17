@@ -520,11 +520,10 @@ packages.
    ffx-vk-linux headers found").
 4. Choose **FSR 4** as the upscaler in the launcher, or run with `KYTY_UPSCALER=fsr KYTY_FSR4=1`.
 
-`get-fsr4-linux.sh` builds one fixed ffx-vk-linux commit (`PINNED_REF` in the script: the one the OpenSSL 4 patch in
-`tools/local/fsr4/` was made against and that was built with the emulator), so what is built does not change under you;
-`FFX_VK_LINUX_REF=<commit, tag or branch>` tries another one (untested, and the patch may not apply). The release
-packages are built without ffx-vk-linux, so FSR 4 needs a build from source: with `KYTY_FSR4` set they say "FSR 4: this
-build was made without ffx-vk-linux ..." and use FSR 3.
+`get-fsr4-linux.sh` builds one fixed ffx-vk-linux commit (`PINNED_REF` in the script: the one built and tested with the
+emulator), so what is built does not change under you; `FFX_VK_LINUX_REF=<commit, tag or branch>` tries another one
+(untested). The release packages are built without ffx-vk-linux, so FSR 4 needs a build from source: with `KYTY_FSR4`
+set they say "FSR 4: this build was made without ffx-vk-linux ..." and use FSR 3.
 
 The log says which one runs ("Super resolution: AMD FSR 4 ..."). When FSR 4 cannot start (library or DLLs missing, a GPU
 the DLLs do not take, a failed context) it says why and FSR 3 built in takes over. `KYTY_FSR4_DIR` names another folder
